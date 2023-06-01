@@ -1,0 +1,27 @@
+<mat-card class="max-w-md m-auto">
+    <mat-card-content>
+        <form class="flex flex-col" [formGroup]="profileForm">
+
+            <h2>Profile</h2>
+
+            <mat-form-field appearance="fill">
+                <mat-label>First Name</mat-label>
+                <input matInput placeholder="Enter your first name" name="first_name" formControlName="first_name">
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+                <mat-label>Last Name</mat-label>
+                <input matInput placeholder="Enter your last name" name="last_name" formControlName="last_name">
+            </mat-form-field>
+
+            <mat-error *ngIf="error">
+                <strong>Saving failed</strong>
+                ({{ error }})
+            </mat-error>
+
+            <app-loading *ngIf="saving" class="profile-saving-spinner"></app-loading>
+        </form>
+
+    </mat-card-content>
+
+</mat-card>

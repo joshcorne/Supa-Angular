@@ -1,0 +1,44 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+// Model names use singular PascalCase but are mapped to plural snake_case.
+// Model properties use camelCase but are mapped to snake_case.
+// Prisma conventions are singular camel and pascal case, however Supabase
+// and Postgres uses plural and snake case.
+
+// The list of available countries
+model Country {
+  id            Int       @id @default(autoincrement())
+  name          String
+  iso3166Alpha2 String
+  users         Profile[] @relation("profile_country")
+
+  @@map("countries")
+}
+
+model Profile {
+  id        String   @id @unique @db.Uuid // Linked to the auth.users.id through manual migration
+  email     String   @unique
+  phone     String?
+  firstName String?  @map("first_name")
+  lastName  String?  @map("last_name")
+  addr1     String?
+  addr2     String?
+  city      String?
+  state     String?
+  postCode  String?  @map("post_code")
+  country   Country? @relation("profile_country", fields: [countryId], references: [id])
+  countryId Int?     @map("country_id")
+
+  @@map("profiles")
+}

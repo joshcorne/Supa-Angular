@@ -1,0 +1,47 @@
+<mat-card>
+    <mat-card-content>
+        <form *ngIf="!magicLinkSent" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
+            <h2>Login</h2>
+
+            <div class="magic-sign-in">
+                <div *ngIf="!magicLinkSending">
+                    <h3>Sign in or sign up with magic link</h3>
+
+                    <mat-form-field appearance="fill">
+                        <mat-label>Email</mat-label>
+                        <input matInput placeholder="Enter your email address" name="email" formControlName="email">
+                    </mat-form-field>
+
+                    <button mat-raised-button color="primary" type="submit" [disabled]="loginForm.invalid">Submit</button>
+
+                    <mat-error *ngIf="error">
+                        {{ error }}
+                    </mat-error>
+                </div>
+
+                <div class="separator">Or</div>
+
+                <div class="social-sign-in">
+                    <h3>Sign in with social account</h3>
+
+                    <span class="oauth-buttons">
+                        <button type="button" mat-raised-button color="basic" (click)="signInWithOAuth('google')">Google</button>
+                        <button type="button" mat-raised-button color="basic" (click)="signInWithOAuth('apple')">Apple</button>
+                        <button type="button" mat-raised-button color="basic" (click)="signInWithOAuth('azure')">Microsoft</button>
+                    </span>
+                </div>
+            </div> 
+
+            <div *ngIf="magicLinkSending">
+                <app-loading></app-loading>
+            </div>
+        </form>
+
+        <div *ngIf="magicLinkSent">
+            <p>Check your email. We have sent a link to {{loginForm.get('email')?.value}} for login.</p>
+            <button mat-raised-button color="secondary" type="button" (click)="resetForm()">Back</button>
+        </div>
+    </mat-card-content>
+
+</mat-card>

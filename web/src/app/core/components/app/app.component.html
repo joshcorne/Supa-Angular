@@ -1,0 +1,33 @@
+<mat-sidenav-container fullscreen>
+    <mat-sidenav #sidenav>
+        <mat-nav-list (click)="sidenav.close()">
+            <a mat-list-item  routerLink="" routerLinkActive="active" title="Home">Home</a>
+        </mat-nav-list>
+    </mat-sidenav>
+
+    <mat-toolbar color="primary">
+        <mat-toolbar-row>
+            <button type="button" mat-icon-button (click)="sidenav.open()" title="Open Side Nav">
+                <mat-icon>menu</mat-icon>
+            </button>
+            <a routerLink=""><h1 class="m-0" title="Home">{{title}}</h1></a>
+            <span class="ml-auto" *ngIf="showAccountActions" id="accountActionsButtonBar">
+                <button type="button" mat-icon-button routerLink="account/profile" title="Edit Profile">
+                    <mat-icon>account_circle</mat-icon>
+                </button>
+                <button type="button" mat-icon-button (click)="signOut()" title="Sign Out">
+                    <mat-icon>logout</mat-icon>
+                </button>
+            </span>
+        </mat-toolbar-row>
+    </mat-toolbar>
+    
+    <div class="flex flex-col justify-between h-screen">
+        <app-loading *ngIf="applicationLoading"></app-loading>
+
+        <router-outlet *ngIf="!applicationLoading"></router-outlet>
+
+        <app-footer class="footer"></app-footer>
+    </div>
+
+</mat-sidenav-container>
