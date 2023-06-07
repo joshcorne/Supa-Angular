@@ -1,13 +1,13 @@
-import { AccountService } from './account.service';
+import { ProfileService } from './profile.service';
 import { MockBuilder, ngMocks } from 'ng-mocks';
 
 describe('AccountService', () => {
-  let service: AccountService;
+  let service: ProfileService;
 
-  beforeEach(() => MockBuilder(AccountService));
+  beforeEach(() => MockBuilder(ProfileService));
 
   beforeEach(() => {
-    service = ngMocks.get(AccountService);
+    service = ngMocks.get(ProfileService);
   });
 
   it('should be created', () => {

@@ -6,7 +6,7 @@ import { AccountModule } from '@app/features/account';
 import { Subject } from 'rxjs';
 import { AuthService } from '@app/core/services';
 import { Profile } from '@app/types';
-import { AccountService } from '../../services/account.service';
+import { ProfileService } from '../../services/profile.service';
 
 describe('ProfileComponent', () => {
   let component: ProfileComponent;
@@ -14,7 +14,7 @@ describe('ProfileComponent', () => {
   let _fakeProfile$ = new Subject<Profile | null>();
 
   beforeEach(() => MockBuilder(ProfileComponent, AccountModule)
-    .mock(AuthService, {
+    .mock(ProfileService, {
       profile$: _fakeProfile$.asObservable(),
     })
     .keep(ReactiveFormsModule, {
@@ -60,10 +60,10 @@ describe('ProfileComponent', () => {
       first_name: 'Jane',
       last_name: 'Doe',
     };
-    let service: AccountService;
+    let service: ProfileService;
 
     beforeEach(() => {
-      service = ngMocks.findInstance(AccountService);
+      service = ngMocks.findInstance(ProfileService);
       service.updateProfile = jasmine.createSpy().and.returnValue(Promise.resolve(profile));
     });
 

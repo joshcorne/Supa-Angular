@@ -4,10 +4,13 @@ import { AuthError, AuthResponse, Provider, RealtimeChannel, User } from '@supab
 import { BehaviorSubject, Observable, first, map, skipWhile } from 'rxjs';
 import { ActivatedRouteSnapshot, CanActivateFn, CanMatchFn, Route, Router, RouterStateSnapshot, UrlSegment } from '@angular/router';
 import { Profile } from '@app/types';
+import { ProfileService } from '@app/features/account/services';
 
 /**
  * This service is responsible for managing authentication.
  * It calls Supabase to handle authentication.
+ * This manages anything regarding the auth table.
+ * For the profile table, see {@link ProfileService}
  * 
  * {@link https://supabase.io/docs/guides/auth}
  * 
@@ -23,15 +26,11 @@ export class AuthService {
   user$ = this._user$.pipe(skipWhile(val => typeof val === 'undefined')) as Observable<User | null>;
   private userId?: string;
 
-  // Profile state
-  private _profile$ = new BehaviorSubject<Profile | null | undefined>(undefined);
-  profile$ = this._profile$.pipe(skipWhile(val => typeof val === 'undefined')) as Observable<Profile | null>;
-  private profileSubscription?: RealtimeChannel;
-
-  isSignedIn$ = this.profile$.pipe(map(profile => !!profile));
+  isSignedIn$ = this.profileService.profile$.pipe(map(profile => !!profile));
 
   constructor(
-    private supabase: SupabaseService
+    private supabase: SupabaseService,
+    private profileService: ProfileService
   ) {
     // Get the current user
     this.supabase.user.then(({ data, error }) => {
@@ -53,49 +52,18 @@ export class AuthService {
         if(user.id !== this.userId) {
           const userId = user.id;
           this.userId = userId;
-
-          // Get the profile
-          this.supabase
-            .client
-            .from('profiles')
-            .select('*')
-            .eq('id', userId)
-            .returns<Profile>()
-            .single()
-            .then(res => {
-              
-              this._profile$.next(res.data ?? null);
-              
-              // If the db profile changes, update the profile
-              this.profileSubscription = this.supabase
-                .client
-                .channel('public:profiles')
-                .on('postgres_changes', {
-                  event: '*',
-                  schema: 'public',
-                  table: 'profiles',
-                  filter: 'id=eq.' + user.id
-                }, (payload: any) => {
-                  this._profile$.next(payload.new)
-                })
-                .subscribe();
-            });
+          this.profileService.onSignIn(userId);
         }
       } else {
         // Clean up on sign out
         delete this.userId;
-        this._profile$.next(null);
-        if(this.profileSubscription) {
-          this.supabase.client.removeChannel(this.profileSubscription).then(res => {
-            console.log(res);
-          })
-        }
+        this.profileService.onSignOut();
       }
     });
   }
 
   singInWithOAuth(provider: Provider): Promise<void> {
-    this._profile$.next(undefined);
+    this.profileService.clearCurrentProfile();
     return new Promise<void>((resolve, reject) => {
       this.supabase.client.auth.signInWithOAuth({ provider: provider })
         .then(({ data, error }) => {
@@ -103,7 +71,7 @@ export class AuthService {
             reject(error);
           } else {
             // Once profile is set, we can proceed
-            this.profile$.pipe(first()).subscribe(() => {
+            this.profileService.profile$.pipe(first()).subscribe(() => {
               resolve();
             });
           }

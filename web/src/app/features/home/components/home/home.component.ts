@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from '@app/core/services';
+import { ProfileService } from '@app/features/account/services';
 import { environment } from '@app/environment';
 import { Observable, map } from 'rxjs';
 
@@ -14,12 +14,12 @@ export class HomeComponent implements OnInit {
   personalWelcome: Observable<string> | undefined;
 
   constructor(
-    private authService: AuthService
+    private profileService: ProfileService
   ) { }
 
   ngOnInit() {
     this.applicationName = environment.applicationName;
-    this.personalWelcome = this.authService.profile$.pipe(
+    this.personalWelcome = this.profileService.profile$.pipe(
       map(profile => {
         return profile?.first_name ? `, ${profile.first_name}` : '';
       })

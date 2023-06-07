@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { AuthService } from '@app/core/services';
-import { AccountService } from '../../services/account.service';
+import { ProfileService } from '@app/features/account/services/profile.service';
 
 @Component({
   selector: 'app-profile',
@@ -22,12 +21,11 @@ export class ProfileComponent implements OnInit {
   saving = false;
 
   constructor(
-    private accountService: AccountService,
-    private authService: AuthService
+    private profileService: ProfileService
   ) { }
 
   ngOnInit() {
-    this.authService.profile$.subscribe((profile) => {
+    this.profileService.profile$.subscribe((profile) => {
       if (profile) {
         // Make sure to set emitEvent to false to prevent infinite loop
         this.profileForm.patchValue(profile, { emitEvent: false });
@@ -42,7 +40,7 @@ export class ProfileComponent implements OnInit {
       if (this.profileForm.valid) {
         this.saving = true;
         delete this.error;
-        this.accountService.updateProfile(this.userId!, value)
+        this.profileService.updateProfile(this.userId!, value)
           .then((response) => {
             if (response.error) {
               this.error = response.error.message;

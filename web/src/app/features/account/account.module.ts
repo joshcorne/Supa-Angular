@@ -8,7 +8,10 @@ import { ProfileComponent } from '@app/features/account/components';
 import { MaterialModule } from '@app/material.module';
 import { SharedModule } from '@app/shared/shared.module';
 
-
+/**
+ * This account module isused to handle anything regarding auth and profiles.
+ * Account is used to refer to the user authentication together with profile.
+ */
 @NgModule({
   declarations: [
     LoginComponent,

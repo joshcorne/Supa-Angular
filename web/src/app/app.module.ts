@@ -23,7 +23,6 @@ import { HomeModule } from '@app/features/home/home.module';
     MaterialModule,
     HomeModule
   ],
-  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
